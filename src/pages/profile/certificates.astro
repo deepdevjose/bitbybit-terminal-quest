@@ -1,0 +1,10 @@
+---
+import AppLayout from "../../layouts/AppLayout.astro";
+import AuthGate from "../../components/AuthGate";
+import CertificatesList from "../../components/CertificatesList";
+---
+<AppLayout titleKey="profile.title">
+  <AuthGate mode="ready" client:load>
+    <CertificatesList client:load />
+  </AuthGate>
+</AppLayout>

@@ -1,0 +1,15 @@
+---
+import LanguageSelector from "./LanguageSelector";
+import { defaultLocale, t } from "../lib/i18n";
+---
+<nav class="sticky top-0 z-10 border-b border-white/10 bg-[#090a0d]/75 backdrop-blur-2xl">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+    <a href="/" class="text-sm font-semibold tracking-wide text-white" data-i18n="app.name">{t(defaultLocale, "app.name")}</a>
+    <div class="flex items-center gap-1 text-sm text-zinc-400">
+      <a class="rounded-md px-3 py-2 transition hover:bg-white/10 hover:text-white" href="/dashboard" data-i18n="nav.dashboard">{t(defaultLocale, "nav.dashboard")}</a>
+      <a class="rounded-md px-3 py-2 transition hover:bg-white/10 hover:text-white" href="/profile" data-i18n="nav.profile">{t(defaultLocale, "nav.profile")}</a>
+      <a class="rounded-md px-3 py-2 transition hover:bg-white/10 hover:text-white" href="/settings" data-i18n="nav.settings">{t(defaultLocale, "nav.settings")}</a>
+      <LanguageSelector client:load />
+    </div>
+  </div>
+</nav>

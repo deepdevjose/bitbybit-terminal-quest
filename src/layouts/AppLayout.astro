@@ -1,0 +1,27 @@
+---
+import AppNav from "../components/AppNav.astro";
+import I18nBoot from "../components/I18nBoot.astro";
+import { defaultLocale, t, type TranslationKey } from "../lib/i18n";
+import "../styles/global.css";
+
+const { titleKey = "app.title" } = Astro.props as { titleKey?: TranslationKey };
+const title = t(defaultLocale, titleKey);
+---
+<!doctype html>
+<html lang={defaultLocale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={t(defaultLocale, "app.description")} />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="apple-touch-icon" href="/icon.png" />
+    <title>{title}</title>
+  </head>
+  <body data-i18n-document-title={titleKey}>
+    <I18nBoot />
+    <div class="page-shell">
+      <AppNav />
+      <slot />
+    </div>
+  </body>
+</html>

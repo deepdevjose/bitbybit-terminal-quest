@@ -1,0 +1,20 @@
+---
+import AppLayout from "../../layouts/AppLayout.astro";
+import TerminalMission from "../../components/TerminalMission";
+import { debianMissions } from "../../lib/curriculum";
+import type { TranslationKey } from "../../lib/i18n";
+import AuthGate from "../../components/AuthGate";
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return debianMissions.map((mission) => ({ params: { missionId: mission.id }, props: { mission } }));
+}
+
+const { mission } = Astro.props;
+---
+<AppLayout titleKey={`mission.${mission.id}.title` as TranslationKey}>
+  <AuthGate mode="ready" client:load>
+    <TerminalMission mission={mission} client:load />
+  </AuthGate>
+</AppLayout>

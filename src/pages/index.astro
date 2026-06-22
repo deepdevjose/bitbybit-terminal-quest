@@ -1,0 +1,172 @@
+---
+import "../styles/global.css";
+import I18nBoot from "../components/I18nBoot.astro";
+import LanguageSelector from "../components/LanguageSelector";
+import LandingCTA from "../components/LandingCTA";
+import { defaultLocale, t } from "../lib/i18n";
+---
+<!doctype html>
+<html lang={defaultLocale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={t(defaultLocale, "app.description")} />
+    <link rel="icon" type="image/png" href="/icon.png" />
+    <link rel="apple-touch-icon" href="/icon.png" />
+    <title>{t(defaultLocale, "app.title")}</title>
+  </head>
+  <body data-i18n-document-title="app.title">
+    <I18nBoot />
+    <main class="landing-shell">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+        <a class="flex items-center gap-3 font-semibold text-zinc-950" href="/">
+          <img class="h-10 w-10 rounded-xl" src="/icon.png" alt={t(defaultLocale, "app.name")} data-i18n-title="app.name" />
+          <span data-i18n="app.name">{t(defaultLocale, "app.name")}</span>
+        </a>
+        <div class="flex items-center gap-3">
+          <a class="hidden rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-950/5 sm:inline-flex" href="#paths" data-i18n="nav.paths">{t(defaultLocale, "nav.paths")}</a>
+          <a class="hidden rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-950/5 sm:inline-flex" href="#certificates" data-i18n="nav.certificates">{t(defaultLocale, "nav.certificates")}</a>
+          <a class="rounded-md px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-950/5" href="/auth/login" data-i18n="auth.login.eyebrow">{t(defaultLocale, "auth.login.eyebrow")}</a>
+          <LanguageSelector variant="light" client:load />
+        </div>
+      </nav>
+      <section class="mx-auto grid min-h-[calc(100vh-84px)] max-w-6xl items-center gap-12 px-6 pb-12 pt-8 lg:grid-cols-[1fr_0.92fr]">
+        <div>
+          <p class="subtle-label text-zinc-500" data-i18n="landing.eyebrow">{t(defaultLocale, "landing.eyebrow")}</p>
+          <h1 class="mt-4 max-w-3xl text-5xl font-semibold leading-[1.02] tracking-tight text-zinc-950 md:text-7xl" data-i18n="app.title">{t(defaultLocale, "app.title")}</h1>
+          <p class="mt-6 max-w-2xl text-lg leading-8 text-zinc-600" data-i18n="landing.copy">{t(defaultLocale, "landing.copy")}</p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <LandingCTA client:load />
+            <a class="focus-ring inline-flex min-h-12 items-center justify-center rounded-md border border-zinc-950/10 bg-white px-6 text-sm font-semibold text-zinc-950 shadow-sm transition hover:bg-zinc-100" href="/auth/login" data-i18n="auth.login.eyebrow">{t(defaultLocale, "auth.login.eyebrow")}</a>
+          </div>
+          <p class="mt-5 text-sm font-medium text-zinc-500" data-i18n="landing.microcopy">{t(defaultLocale, "landing.microcopy")}</p>
+        </div>
+        <section class="landing-card overflow-hidden rounded-lg p-0">
+          <div class="flex h-11 items-center gap-2 border-b border-zinc-950/10 bg-zinc-950/[0.03] px-4">
+            <span class="h-3 w-3 rounded-full bg-red-400"></span>
+            <span class="h-3 w-3 rounded-full bg-amber-300"></span>
+            <span class="h-3 w-3 rounded-full bg-emerald-400"></span>
+            <span class="ml-3 font-mono text-xs text-zinc-500">quest://debian/hidden-folder</span>
+          </div>
+          <div class="bg-[#090a0d] p-5 font-mono text-sm leading-7">
+            <p class="text-zinc-300" data-i18n="landing.preview.loaded">{t(defaultLocale, "landing.preview.loaded")}</p>
+            <p><span class="text-sky-200">bitbybit@debian:~$</span> <span class="text-zinc-50">ls</span></p>
+            <p class="text-zinc-400">downloads&nbsp;&nbsp;projects</p>
+            <p><span class="text-sky-200">bitbybit@debian:~$</span> <span class="text-zinc-50">cd projects/secret</span></p>
+            <p><span class="text-sky-200">bitbybit@debian:~/projects/secret$</span> <span class="text-zinc-50">cat flag.txt</span></p>
+            <p class="text-zinc-300" data-i18n="landing.preview.found">{t(defaultLocale, "landing.preview.found")}</p>
+            <p class="mt-5 text-emerald-300" data-i18n="landing.preview.complete">{t(defaultLocale, "landing.preview.complete")}</p>
+          </div>
+        </section>
+      </section>
+
+      <section id="paths" class="mx-auto max-w-6xl px-6 py-20">
+        <div class="max-w-3xl">
+          <p class="subtle-label text-zinc-500" data-i18n="landing.paths.eyebrow">{t(defaultLocale, "landing.paths.eyebrow")}</p>
+          <h2 class="mt-4 text-3xl font-semibold tracking-tight text-zinc-950 md:text-5xl" data-i18n="landing.paths.title">{t(defaultLocale, "landing.paths.title")}</h2>
+          <p class="mt-5 text-base leading-8 text-zinc-600" data-i18n="landing.paths.copy">{t(defaultLocale, "landing.paths.copy")}</p>
+        </div>
+        <div class="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+          <article class="landing-path-card border-emerald-500/30">
+            <span class="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-600" data-i18n="common.playable">{t(defaultLocale, "common.playable")}</span>
+            <h3 class="mt-4 text-lg font-semibold text-zinc-950" data-i18n="environment.debian.name">{t(defaultLocale, "environment.debian.name")}</h3>
+            <p class="mt-3 text-sm leading-6 text-zinc-600" data-i18n="environment.debian.description">{t(defaultLocale, "environment.debian.description")}</p>
+          </article>
+          <article class="landing-path-card border-sky-500/30">
+            <span class="text-xs font-semibold uppercase tracking-[0.16em] text-sky-600" data-i18n="common.playable">{t(defaultLocale, "common.playable")}</span>
+            <h3 class="mt-4 text-lg font-semibold text-zinc-950" data-i18n="environment.powershell.name">{t(defaultLocale, "environment.powershell.name")}</h3>
+            <p class="mt-3 text-sm leading-6 text-zinc-600" data-i18n="environment.powershell.description">{t(defaultLocale, "environment.powershell.description")}</p>
+          </article>
+          <article class="landing-path-card border-zinc-300">
+            <span class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500" data-i18n="common.playable">{t(defaultLocale, "common.playable")}</span>
+            <h3 class="mt-4 text-lg font-semibold text-zinc-950" data-i18n="environment.macos.name">{t(defaultLocale, "environment.macos.name")}</h3>
+            <p class="mt-3 text-sm leading-6 text-zinc-600" data-i18n="environment.macos.description">{t(defaultLocale, "environment.macos.description")}</p>
+          </article>
+          <article class="landing-path-card opacity-80">
+            <span class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500" data-i18n="common.locked">{t(defaultLocale, "common.locked")}</span>
+            <h3 class="mt-4 text-lg font-semibold text-zinc-950" data-i18n="environment.fedora.name">{t(defaultLocale, "environment.fedora.name")}</h3>
+            <p class="mt-3 text-sm leading-6 text-zinc-600" data-i18n="environment.fedora.unlock">{t(defaultLocale, "environment.fedora.unlock")}</p>
+          </article>
+          <article class="landing-path-card opacity-80">
+            <span class="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500" data-i18n="common.locked">{t(defaultLocale, "common.locked")}</span>
+            <h3 class="mt-4 text-lg font-semibold text-zinc-950" data-i18n="environment.arch.name">{t(defaultLocale, "environment.arch.name")}</h3>
+            <p class="mt-3 text-sm leading-6 text-zinc-600" data-i18n="environment.arch.unlock">{t(defaultLocale, "environment.arch.unlock")}</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="bg-[#090a0d] px-6 py-20 text-white">
+        <div class="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+          <div>
+            <p class="subtle-label text-zinc-400" data-i18n="landing.how.eyebrow">{t(defaultLocale, "landing.how.eyebrow")}</p>
+            <h2 class="mt-4 text-3xl font-semibold tracking-tight md:text-5xl" data-i18n="landing.how.title">{t(defaultLocale, "landing.how.title")}</h2>
+          </div>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <article class="landing-dark-panel">
+              <span class="landing-step">01</span>
+              <h3 data-i18n="landing.how.choose.title">{t(defaultLocale, "landing.how.choose.title")}</h3>
+              <p data-i18n="landing.how.choose.copy">{t(defaultLocale, "landing.how.choose.copy")}</p>
+            </article>
+            <article class="landing-dark-panel">
+              <span class="landing-step">02</span>
+              <h3 data-i18n="landing.how.missions.title">{t(defaultLocale, "landing.how.missions.title")}</h3>
+              <p data-i18n="landing.how.missions.copy">{t(defaultLocale, "landing.how.missions.copy")}</p>
+            </article>
+            <article class="landing-dark-panel">
+              <span class="landing-step">03</span>
+              <h3 data-i18n="landing.how.rewards.title">{t(defaultLocale, "landing.how.rewards.title")}</h3>
+              <p data-i18n="landing.how.rewards.copy">{t(defaultLocale, "landing.how.rewards.copy")}</p>
+            </article>
+            <article class="landing-dark-panel">
+              <span class="landing-step">04</span>
+              <h3 data-i18n="landing.how.certificates.title">{t(defaultLocale, "landing.how.certificates.title")}</h3>
+              <p data-i18n="landing.how.certificates.copy">{t(defaultLocale, "landing.how.certificates.copy")}</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="certificates" class="mx-auto grid max-w-6xl gap-12 px-6 py-20 lg:grid-cols-[0.95fr_1.05fr]">
+        <div>
+          <p class="subtle-label text-zinc-500" data-i18n="landing.recognition.eyebrow">{t(defaultLocale, "landing.recognition.eyebrow")}</p>
+          <h2 class="mt-4 text-3xl font-semibold tracking-tight text-zinc-950 md:text-5xl" data-i18n="landing.recognition.title">{t(defaultLocale, "landing.recognition.title")}</h2>
+          <p class="mt-5 text-base leading-8 text-zinc-600" data-i18n="landing.recognition.copy">{t(defaultLocale, "landing.recognition.copy")}</p>
+        </div>
+        <article class="landing-certificate-preview">
+          <div class="flex items-center gap-3">
+            <img class="h-11 w-11 rounded-xl" src="/icon.png" alt={t(defaultLocale, "app.name")} data-i18n-title="app.name" />
+            <div>
+              <p class="text-sm font-semibold text-white" data-i18n="app.name">{t(defaultLocale, "app.name")}</p>
+              <p class="text-xs uppercase tracking-[0.18em] text-zinc-500" data-i18n="landing.recognition.verify">{t(defaultLocale, "landing.recognition.verify")}</p>
+            </div>
+          </div>
+          <div class="mt-10">
+            <h3 class="text-2xl font-semibold text-white" data-i18n="landing.recognition.certTitle">{t(defaultLocale, "landing.recognition.certTitle")}</h3>
+            <p class="mt-2 text-sm font-medium text-emerald-300" data-i18n="landing.recognition.certSubtitle">{t(defaultLocale, "landing.recognition.certSubtitle")}</p>
+            <p class="mt-8 text-sm leading-7 text-zinc-300" data-i18n="landing.recognition.skills">{t(defaultLocale, "landing.recognition.skills")}</p>
+          </div>
+          <div class="mt-10 grid grid-cols-[1fr_auto] items-end gap-6">
+            <div class="space-y-4">
+              <div class="rounded-md border border-white/10 bg-white/[0.04] p-4">
+                <p class="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-zinc-500" data-i18n="landing.recognition.issuedBy">{t(defaultLocale, "landing.recognition.issuedBy")}</p>
+                <p class="mt-2 text-sm font-semibold text-white" data-i18n="app.name">{t(defaultLocale, "app.name")}</p>
+              </div>
+              <div class="rounded-md border border-white/10 bg-white/[0.04] p-4">
+                <p class="text-[0.7rem] font-semibold uppercase tracking-[0.18em] text-zinc-500" data-i18n="landing.recognition.authorizedIssuer">{t(defaultLocale, "landing.recognition.authorizedIssuer")}</p>
+                <p class="mt-2 text-sm font-semibold text-white" data-i18n="landing.recognition.signer">{t(defaultLocale, "landing.recognition.signer")}</p>
+                <p class="mt-1 text-xs text-zinc-400" data-i18n="landing.recognition.signerTitle">{t(defaultLocale, "landing.recognition.signerTitle")}</p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-zinc-300" data-i18n="landing.recognition.certificateId">{t(defaultLocale, "landing.recognition.certificateId")}</p>
+                <p class="mt-1 text-xs text-zinc-500" data-i18n="landing.recognition.verifyUrl">{t(defaultLocale, "landing.recognition.verifyUrl")}</p>
+              </div>
+            </div>
+            <div class="grid h-24 w-24 place-items-center rounded-md bg-white p-3">
+              <div class="h-full w-full bg-[linear-gradient(90deg,#090a0d_25%,transparent_25%,transparent_50%,#090a0d_50%,#090a0d_75%,transparent_75%),linear-gradient(#090a0d_25%,transparent_25%,transparent_50%,#090a0d_50%,#090a0d_75%,transparent_75%)] bg-[length:18px_18px]"></div>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

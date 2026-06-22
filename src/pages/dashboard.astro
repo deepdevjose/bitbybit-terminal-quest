@@ -1,0 +1,10 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+import DashboardApp from "../components/DashboardApp";
+import AuthGate from "../components/AuthGate";
+---
+<AppLayout titleKey="dashboard.title">
+  <AuthGate mode="ready" client:load>
+    <DashboardApp client:load />
+  </AuthGate>
+</AppLayout>

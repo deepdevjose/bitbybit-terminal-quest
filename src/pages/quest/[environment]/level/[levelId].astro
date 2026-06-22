@@ -1,0 +1,37 @@
+---
+import AppLayout from "../../../../layouts/AppLayout.astro";
+import { environments } from "../../../../lib/curriculum";
+import { defaultLocale, t, type TranslationKey } from "../../../../lib/i18n";
+import LevelOverview from "../../../../components/LevelOverview";
+import AuthGate from "../../../../components/AuthGate";
+
+export const prerender = true;
+
+export function getStaticPaths() {
+  return environments.flatMap((environment) =>
+    environment.levels.map((level) => ({
+      params: { environment: environment.slug, levelId: String(level.id) },
+      props: { environment, level },
+    })),
+  );
+}
+
+const { environment, level } = Astro.props;
+const envNameKey = `environment.${environment.id}.name` as TranslationKey;
+const levelTitleKey = `level.${environment.id}.${level.id}.title` as TranslationKey;
+---
+<AppLayout titleKey={levelTitleKey}>
+  <main class="mx-auto max-w-6xl px-6 pb-16 pt-8">
+    <header class="mb-8">
+      <a class="text-sm font-semibold text-zinc-300 hover:text-white" href={`/quest/${environment.slug}`} data-i18n="common.backTo" data-i18n-param-name={t(defaultLocale, envNameKey)}>{t(defaultLocale, "common.backTo", { name: t(defaultLocale, envNameKey) })}</a>
+      <h1 class="mt-3 text-4xl font-semibold tracking-tight text-white md:text-6xl"><span data-i18n="common.level">{t(defaultLocale, "common.level")}</span> {level.id}: <span data-i18n={levelTitleKey}>{t(defaultLocale, levelTitleKey)}</span></h1>
+      <p class="mt-5 max-w-2xl text-zinc-400" data-i18n={level.missions.length ? "level.playableDescription" : "level.placeholderDescription"}>{t(defaultLocale, level.missions.length ? "level.playableDescription" : "level.placeholderDescription")}</p>
+      <div class="mt-5 flex flex-wrap gap-2">
+        {level.commands.map((command) => <code class="rounded-md border border-white/10 bg-zinc-950 px-2 py-1 text-sm text-zinc-200">{command}</code>)}
+      </div>
+    </header>
+    <AuthGate mode="ready" client:load>
+      <LevelOverview environment={environment} level={level} client:load />
+    </AuthGate>
+  </main>
+</AppLayout>

@@ -1,0 +1,10 @@
+---
+import AuthLayout from "../../layouts/AuthLayout.astro";
+import OnboardingProfile from "../../components/OnboardingProfile";
+import AuthGate from "../../components/AuthGate";
+---
+<AuthLayout titleKey="onboarding.profile.title">
+  <AuthGate mode="profile" client:load>
+    <OnboardingProfile client:load />
+  </AuthGate>
+</AuthLayout>
