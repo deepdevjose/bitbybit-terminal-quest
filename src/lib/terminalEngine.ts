@@ -29,7 +29,7 @@ const fallbackTranslate: TerminalTranslator = (key, params = {}) => {
     "terminal.cpUnable": "cp: unable to copy",
     "terminal.mvUnable": "mv: unable to move",
     "terminal.rmCannotRemove": "rm: cannot remove '{path}'",
-    "terminal.mockedCommand": "{command}: mocked command is not implemented in this MVP",
+    "terminal.mockedCommand": "{command}: this simulator has not implemented that command output yet",
   };
   return Object.entries(params).reduce((message, [name, value]) => message.replaceAll(`{${name}}`, value), messages[key]);
 };
@@ -122,10 +122,59 @@ const baseCommand = (input: string) => input.trim().split(/\s+/)[0] ?? "";
 
 const parseArgs = (input: string) => input.match(/"[^"]*"|'[^']*'|\S+/g)?.map((part) => part.replace(/^["']|["']$/g, "")) ?? [];
 
+const normalizeCommand = (input: string) => parseArgs(input).join(" ");
+
 const dirname = (path: string) => {
   const parts = path.split("/");
   parts.pop();
   return parts.join("/") || "/";
+};
+
+const simulateCurl = (args: string[]) => {
+  const url = args.find((arg) => /^https?:\/\//.test(arg));
+  if (!url) return "curl: try 'curl https://example.com/artifact'";
+  if (url === "https://example.com/artifact") return "artifact downloaded: bitbybit-release.tar\nstatus: 200 OK";
+  if (url === "http://localhost/health") return '{"status":"ok","service":"web","uptime":"42m"}';
+  return `HTTP/1.1 200 OK\nFetched ${url}`;
+};
+
+const simulateApt = (args: string[]) => {
+  const [subcommand, packageName] = args;
+  if (subcommand === "update") {
+    return [
+      "Hit:1 http://deb.debian.org/debian bookworm InRelease",
+      "Get:2 http://security.debian.org/debian-security bookworm-security InRelease [48.0 kB]",
+      "Reading package lists... Done",
+      "Building dependency tree... Done",
+      "All packages are up to date.",
+    ].join("\n");
+  }
+
+  if (subcommand === "install" && packageName === "curl") {
+    return [
+      "Reading package lists... Done",
+      "Building dependency tree... Done",
+      "The following NEW packages will be installed:",
+      "  curl",
+      "0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.",
+      "Need to get 315 kB of archives.",
+      "After this operation, 706 kB of additional disk space will be used.",
+      "Do you want to continue? [Y/n] y",
+      "Get:1 http://deb.debian.org/debian bookworm/main amd64 curl amd64 7.88.1-10",
+      "Setting up curl (7.88.1-10) ...",
+    ].join("\n");
+  }
+
+  if (subcommand === "list") {
+    return [
+      "Listing... Done",
+      "curl/stable,now 7.88.1-10 amd64 [installed]",
+      "bash/stable,now 5.2.15-2 amd64 [installed]",
+      "coreutils/stable,now 9.1-1 amd64 [installed]",
+    ].join("\n");
+  }
+
+  return "apt: supported simulations are: apt update, apt install curl, apt list";
 };
 
 export class TerminalEngine {
@@ -277,6 +326,12 @@ export class TerminalEngine {
           if (!deleteNode(next.fs, resolvePath(next.cwd, arg))) next.output.push({ type: "output", text: translate("terminal.rmCannotRemove", { path: arg }) });
         }
         break;
+      case "curl":
+        next.output.push({ type: "output", text: simulateCurl(args) });
+        break;
+      case "apt":
+        next.output.push({ type: "output", text: simulateApt(args) });
+        break;
       default:
         next.output.push({ type: "output", text: translate("terminal.mockedCommand", { command }) });
     }
@@ -301,6 +356,8 @@ export class TerminalEngine {
     switch (rule.type) {
       case "historyIncludes":
         return state.history.some((entry) => baseCommand(entry) === rule.command);
+      case "historyIncludesExact":
+        return state.history.some((entry) => normalizeCommand(entry) === normalizeCommand(rule.command));
       case "cwdEquals":
         return state.cwd === rule.path;
       case "pathExists": {

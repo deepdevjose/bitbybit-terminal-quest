@@ -14,6 +14,7 @@ export type VirtualFileSystem = Record<string, VirtualNode>;
 
 export type ValidationRule =
   | { type: "historyIncludes"; command: string }
+  | { type: "historyIncludesExact"; command: string }
   | { type: "cwdEquals"; path: string }
   | { type: "pathExists"; path: string; nodeType?: "file" | "directory" }
   | { type: "fileContains"; path: string; text: string }
@@ -26,6 +27,15 @@ export type Mission = {
   title: string;
   description: string;
   briefing: string;
+  conceptTitle: string;
+  conceptExplanation: string;
+  commandName: string;
+  commandMeaning: string;
+  syntax: string;
+  exampleCommand: string;
+  exampleOutput: string;
+  realWorldUse: string;
+  safetyNote: string;
   objective: string;
   difficulty: "starter" | "standard" | "boss";
   xpReward: number;
@@ -35,6 +45,8 @@ export type Mission = {
   validationRules: ValidationRule[];
   unlockedCommands: string[];
   hints: string[];
+  completionSummary: string;
+  nextMissionPreview: string;
   badgeReward?: string;
   avatarItemReward?: string;
 };

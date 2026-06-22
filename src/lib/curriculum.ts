@@ -1,5 +1,22 @@
 import type { EnvironmentPath, Mission, VirtualFileSystem } from "./types";
 
+type MissionTheoryFields = Pick<
+  Mission,
+  | "conceptTitle"
+  | "conceptExplanation"
+  | "commandName"
+  | "commandMeaning"
+  | "syntax"
+  | "exampleCommand"
+  | "exampleOutput"
+  | "realWorldUse"
+  | "safetyNote"
+  | "completionSummary"
+  | "nextMissionPreview"
+>;
+
+type MissionDraft = Omit<Mission, keyof MissionTheoryFields> & Partial<MissionTheoryFields>;
+
 const homeFs: VirtualFileSystem = {
   "/home/bitbybit": {
     workspace: {},
@@ -21,6 +38,151 @@ const adminCommands = [...packageCommands, "chmod", "chown"];
 const processCommands = [...adminCommands, "ps", "kill", "systemctl"];
 const networkCommands = [...processCommands, "ping", "ssh", "scp"];
 const automationCommands = [...networkCommands, "bash"];
+
+const commandTheory: Record<string, Omit<MissionTheoryFields, "commandName">> = {
+  pwd: {
+    conceptTitle: "Current directory",
+    conceptExplanation: "The terminal always works from a current directory. Commands can behave differently depending on that location.",
+    commandMeaning: "print working directory",
+    syntax: "pwd",
+    exampleCommand: "pwd",
+    exampleOutput: "/home/bitbybit",
+    realWorldUse: "Use pwd on servers or unfamiliar projects to confirm where you are before changing files.",
+    safetyNote: "Check pwd before running commands like rm, mv, or cp so you do not modify the wrong folder.",
+    completionSummary: "You learned how to confirm the current directory before working with files or systems.",
+    nextMissionPreview: "Next, you will inspect the files and folders in your current location.",
+  },
+  ls: {
+    conceptTitle: "Directory listing",
+    conceptExplanation: "Listing a directory shows what files and folders are available before you act.",
+    commandMeaning: "list",
+    syntax: "ls [path]",
+    exampleCommand: "ls",
+    exampleOutput: "notes.txt  workspace",
+    realWorldUse: "Use ls to inspect a project, server folder, or download directory before opening or editing files.",
+    safetyNote: "List the folder before deleting or moving files so you can verify names first.",
+    completionSummary: "You learned how to inspect the visible contents of a directory.",
+    nextMissionPreview: "Next, you will move between directories with cd.",
+  },
+  cd: {
+    conceptTitle: "Changing directories",
+    conceptExplanation: "Moving through folders changes where later commands will run.",
+    commandMeaning: "change directory",
+    syntax: "cd <directory>",
+    exampleCommand: "cd workspace",
+    exampleOutput: "",
+    realWorldUse: "Use cd to enter project folders, deployment directories, or log locations.",
+    safetyNote: "Confirm your location after moving if you are about to modify files.",
+    completionSummary: "You learned that cd changes the terminal's current directory.",
+    nextMissionPreview: "Next, you will keep practicing navigation and workspace control.",
+  },
+  clear: {
+    conceptTitle: "Screen cleanup",
+    conceptExplanation: "A clean terminal view makes current output easier to read without changing files.",
+    commandMeaning: "clear terminal screen",
+    syntax: "clear",
+    exampleCommand: "clear",
+    exampleOutput: "",
+    realWorldUse: "Use clear during long debugging sessions to focus on the next command output.",
+    safetyNote: "clear only changes the view; it does not undo previous commands.",
+    completionSummary: "You learned how to reset visual clutter in the terminal.",
+    nextMissionPreview: "Next, you will combine navigation and file commands in larger missions.",
+  },
+  whoami: {
+    conceptTitle: "Current user",
+    conceptExplanation: "Some commands depend on which user is running them.",
+    commandMeaning: "show current user",
+    syntax: "whoami",
+    exampleCommand: "whoami",
+    exampleOutput: "bitbybit",
+    realWorldUse: "Use whoami before permission-sensitive work on shared servers.",
+    safetyNote: "Avoid running admin actions until you know which user session you are using.",
+    completionSummary: "You learned how to identify the active user.",
+    nextMissionPreview: "Next, you will continue building command confidence.",
+  },
+  mkdir: {
+    conceptTitle: "Directory creation",
+    conceptExplanation: "Directories organize files into predictable places.",
+    commandMeaning: "make directory",
+    syntax: "mkdir <directory>",
+    exampleCommand: "mkdir project",
+    exampleOutput: "",
+    realWorldUse: "Use mkdir to prepare project folders, backups, logs, or script directories.",
+    safetyNote: "Choose clear names so later commands target the right folder.",
+    completionSummary: "You learned how to create a directory for organized work.",
+    nextMissionPreview: "Next, you will create files inside your workspace.",
+  },
+  touch: {
+    conceptTitle: "File creation",
+    conceptExplanation: "An empty file can act as a placeholder or starting point.",
+    commandMeaning: "create or update file timestamp",
+    syntax: "touch <file>",
+    exampleCommand: "touch README.md",
+    exampleOutput: "",
+    realWorldUse: "Use touch to create config files, notes, or project placeholders.",
+    safetyNote: "If the file already exists, touch updates its timestamp without changing content.",
+    completionSummary: "You learned how to create an empty file.",
+    nextMissionPreview: "Next, you will write text into files.",
+  },
+  echo: {
+    conceptTitle: "Text output",
+    conceptExplanation: "echo prints text, and redirection can write that text into a file.",
+    commandMeaning: "print text",
+    syntax: "echo <text> > <file>",
+    exampleCommand: "echo \"Hello\" > README.md",
+    exampleOutput: "",
+    realWorldUse: "Use echo to create quick notes, config snippets, or simple script output.",
+    safetyNote: "The > operator replaces file content; use >> when you want to append.",
+    completionSummary: "You learned how terminal output can become file content.",
+    nextMissionPreview: "Next, you will read file content from the terminal.",
+  },
+  cat: {
+    conceptTitle: "Reading files",
+    conceptExplanation: "Small text files can be printed directly in the terminal.",
+    commandMeaning: "concatenate and print files",
+    syntax: "cat <file>",
+    exampleCommand: "cat README.md",
+    exampleOutput: "Hello BitByBit",
+    realWorldUse: "Use cat to inspect small config files, READMEs, logs, or scripts.",
+    safetyNote: "Very large files can flood the terminal; use search or paging tools for long files.",
+    completionSummary: "You learned how to display a file in the terminal.",
+    nextMissionPreview: "Next, you will combine file operations with project workflows.",
+  },
+};
+
+function inferCommand(mission: Pick<MissionDraft, "validationRules" | "hints" | "objective" | "unlockedCommands">) {
+  const commandRule = mission.validationRules.find((rule): rule is Extract<Mission["validationRules"][number], { command: string }> => "command" in rule);
+  if (commandRule) return commandRule.command.split(/\s+/)[0];
+  const text = `${mission.objective} ${mission.hints.join(" ")}`.toLowerCase();
+  return mission.unlockedCommands.find((command) => new RegExp(`\\b${command}\\b`).test(text)) ?? mission.unlockedCommands[0] ?? "pwd";
+}
+
+function theoryForCommand(command: string): Omit<MissionTheoryFields, "commandName"> {
+  return (
+    commandTheory[command] ?? {
+      conceptTitle: "Command practice",
+      conceptExplanation: "This command is part of a practical terminal workflow.",
+      commandMeaning: command,
+      syntax: command,
+      exampleCommand: command,
+      exampleOutput: "simulated output",
+      realWorldUse: `Use ${command} as part of real operational terminal work.`,
+      safetyNote: "Read the command and target carefully before running it on a real system.",
+      completionSummary: `You practiced ${command} in a simulated terminal mission.`,
+      nextMissionPreview: "Next, you will apply another terminal skill.",
+    }
+  );
+}
+
+function enrichMission(mission: MissionDraft): Mission {
+  const commandName = mission.commandName ?? inferCommand(mission);
+  const theory = theoryForCommand(commandName);
+  return {
+    ...theory,
+    ...mission,
+    commandName,
+  };
+}
 
 const advancedHome: VirtualFileSystem = {
   "/home/bitbybit": {
@@ -57,8 +219,8 @@ const advancedMissionSpecs = [
       {
         id: "rename-log-file",
         title: "Rename a Log File",
-        description: "Use mv to rename an operational log.",
-        briefing: "mv moves and renames files. Renaming logs is common when preparing clean workspaces.",
+        description: "Use mv, short for move, to rename an operational log.",
+        briefing: "mv means move. It can move a file to another folder or rename it when the destination is a new filename.",
         objective: "Rename app.log to app.old.log.",
         command: "mv",
         hint: "Run mv app.log app.old.log.",
@@ -141,11 +303,11 @@ const advancedMissionSpecs = [
         id: "boss-fetch-artifact",
         title: "Boss Mission: Fetch an Artifact",
         description: "Use curl as a download command.",
-        briefing: "Operators often fetch artifacts, scripts, and endpoints from a terminal.",
-        objective: "Run curl to fetch an artifact.",
+        briefing: "curl is a client for URLs. It sends a request to an HTTP address and prints the response in the terminal.",
+        objective: "Run curl https://example.com/artifact to fetch the training artifact.",
         command: "curl",
         hint: "Run curl https://example.com/artifact.",
-        rule: { type: "historyIncludes", command: "curl" },
+        rule: { type: "historyIncludesExact", command: "curl https://example.com/artifact" },
       },
     ],
   },
@@ -157,31 +319,31 @@ const advancedMissionSpecs = [
         id: "apt-update",
         title: "Refresh Package Metadata",
         description: "Use apt as the package management command.",
-        briefing: "On Debian and Ubuntu, package work starts by understanding apt.",
-        objective: "Run apt update.",
+        briefing: "apt is Debian and Ubuntu's package tool. apt update refreshes the local list of available packages; it does not install anything by itself.",
+        objective: "Run apt update to refresh package metadata.",
         command: "apt",
         hint: "Run apt update.",
-        rule: { type: "historyIncludes", command: "apt" },
+        rule: { type: "historyIncludesExact", command: "apt update" },
       },
       {
         id: "apt-install-tool",
         title: "Install a Tool",
         description: "Practice the install shape with apt.",
-        briefing: "Installing tools safely is a core system administration task.",
-        objective: "Run apt install curl.",
+        briefing: "apt install adds a package to the system. Real apt asks for confirmation with Y/n before changing packages; this simulator shows that confirmation step.",
+        objective: "Run apt install curl and confirm the simulated Y/n prompt.",
         command: "apt",
         hint: "Run apt install curl.",
-        rule: { type: "historyIncludes", command: "apt" },
+        rule: { type: "historyIncludesExact", command: "apt install curl" },
       },
       {
         id: "boss-package-audit",
         title: "Boss Mission: Package Audit",
         description: "Simulate checking package state.",
-        briefing: "A package operator checks before changing systems.",
-        objective: "Run an apt command to audit package state.",
+        briefing: "apt list prints known packages and marks installed ones. It is useful for auditing package state before changing a system.",
+        objective: "Run apt list to audit the simulated package state.",
         command: "apt",
         hint: "Run apt list.",
-        rule: { type: "historyIncludes", command: "apt" },
+        rule: { type: "historyIncludesExact", command: "apt list" },
       },
     ],
   },
@@ -275,11 +437,11 @@ const advancedMissionSpecs = [
         id: "curl-health",
         title: "Check HTTP Health",
         description: "Use curl to check an endpoint.",
-        briefing: "curl turns URLs into inspectable terminal output.",
-        objective: "Run curl against a health endpoint.",
+        briefing: "curl turns URLs into inspectable terminal output. Health endpoints usually return a tiny status payload for monitoring.",
+        objective: "Run curl http://localhost/health to inspect the health endpoint.",
         command: "curl",
         hint: "Run curl http://localhost/health.",
-        rule: { type: "historyIncludes", command: "curl" },
+        rule: { type: "historyIncludesExact", command: "curl http://localhost/health" },
       },
       {
         id: "boss-secure-copy",
@@ -409,7 +571,7 @@ const advancedMissionSpecs = [
   },
 ] as const;
 
-const advancedDebianMissions: Mission[] = advancedMissionSpecs.flatMap((level) =>
+const advancedDebianMissions: MissionDraft[] = advancedMissionSpecs.flatMap((level) =>
   level.missions.map((mission, index) => ({
     id: `debian-l${level.levelId}-${mission.id}`,
     environmentId: "debian",
@@ -426,6 +588,7 @@ const advancedDebianMissions: Mission[] = advancedMissionSpecs.flatMap((level) =
     validationRules: "extraRule" in mission ? [mission.rule, mission.extraRule] : [mission.rule],
     unlockedCommands: level.commands,
     hints: [mission.hint],
+    commandName: mission.command,
     badgeReward: mission.id.includes("boss") || mission.id.includes("final") ? badgeForLevel(level.levelId) : undefined,
   }))
 );
@@ -446,7 +609,7 @@ function badgeForLevel(levelId: number) {
   return badges[levelId];
 }
 
-export const debianMissions: Mission[] = [
+const debianMissionDrafts: MissionDraft[] = [
   {
     id: "debian-l1-m1-pwd",
     environmentId: "debian",
@@ -655,6 +818,8 @@ export const debianMissions: Mission[] = [
   },
   ...advancedDebianMissions,
 ];
+
+export const debianMissions: Mission[] = debianMissionDrafts.map(enrichMission);
 
 const pathNames = {
   debian: [

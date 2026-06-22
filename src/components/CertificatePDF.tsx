@@ -8,12 +8,16 @@ export default function CertificatePDF({
   accent,
   verificationUrl,
   recipientPhotoDataUrl,
+  logoUrl,
+  signatureDataUrl,
 }: {
   certificate: CertificateRecord;
   qrCodeUrl: string;
   accent: string;
   verificationUrl: string;
   recipientPhotoDataUrl?: string | null;
+  logoUrl?: string;
+  signatureDataUrl?: string;
 }) {
   const pathName = environments.find((environment) => environment.id === certificate.environmentId)?.name ?? certificate.environmentId;
   const title = "BitByBit Certified Terminal Operator";
@@ -24,7 +28,7 @@ export default function CertificatePDF({
       <Page size="LETTER" style={styles.page}>
         <View style={[styles.accent, { backgroundColor: accent }]} />
         <View style={styles.header}>
-          <Image src="/icon.png" style={styles.logo} />
+          {logoUrl ? <Image src={logoUrl} style={styles.logo} /> : null}
           <View>
             <Text style={styles.brand}>BitByBit Academy</Text>
             <Text style={styles.kicker}>Certificate of Completion / Recognition</Text>
@@ -54,6 +58,7 @@ export default function CertificatePDF({
         <View style={styles.footer}>
           <View style={styles.issuer}>
             <Text style={styles.issuedBy}>Authorized issuer</Text>
+            {signatureDataUrl ? <Image src={signatureDataUrl} style={styles.signature} /> : null}
             <Text style={styles.issuerName}>Jose Manuel Cortes Ceron</Text>
             <Text style={styles.issuerText}>Founder & Lead Instructor</Text>
             <Text style={styles.issuerText}>BitByBit Academy</Text>
@@ -89,43 +94,44 @@ function Field({ label, value }: { label: string; value: string }) {
 
 const styles = StyleSheet.create({
   page: {
-    padding: 46,
-    backgroundColor: "#08090c",
-    color: "#f5f5f7",
+    padding: 34,
+    backgroundColor: "#ffffff",
+    color: "#18181b",
     fontFamily: "Helvetica",
     position: "relative",
   },
   accent: { position: "absolute", left: 0, top: 0, width: "100%", height: 8 },
-  header: { flexDirection: "row", alignItems: "center", gap: 14 },
-  logo: { width: 54, height: 54, borderRadius: 12 },
-  brand: { fontSize: 18, fontWeight: 700 },
-  kicker: { marginTop: 4, fontSize: 9, color: "#a1a1aa", textTransform: "uppercase", letterSpacing: 1.5 },
-  body: { marginTop: 48 },
-  title: { fontSize: 30, lineHeight: 1.16, fontWeight: 700 },
-  subtitle: { marginTop: 8, fontSize: 15, fontWeight: 700 },
-  presented: { marginTop: 34, fontSize: 11, color: "#a1a1aa", textTransform: "uppercase", letterSpacing: 1.4 },
+  header: { flexDirection: "row", alignItems: "center", gap: 12 },
+  logo: { width: 44, height: 44, borderRadius: 10 },
+  brand: { fontSize: 16, fontWeight: 700 },
+  kicker: { marginTop: 3, fontSize: 8, color: "#52525b", textTransform: "uppercase", letterSpacing: 1.2 },
+  body: { marginTop: 30 },
+  title: { fontSize: 27, lineHeight: 1.12, fontWeight: 700 },
+  subtitle: { marginTop: 6, fontSize: 13, fontWeight: 700 },
+  presented: { marginTop: 24, fontSize: 9, color: "#52525b", textTransform: "uppercase", letterSpacing: 1.2 },
   recipientRow: { marginTop: 8, flexDirection: "row", alignItems: "center", gap: 14 },
-  recipientPhoto: { width: 54, height: 54, borderRadius: 10, objectFit: "cover" },
-  name: { fontSize: 28, fontWeight: 700 },
-  wording: { marginTop: 24, fontSize: 12, color: "#d4d4d8", lineHeight: 1.65 },
-  grid: { marginTop: 26, flexDirection: "row", flexWrap: "wrap", gap: 10 },
-  field: { width: "48%", border: "1px solid #27272a", padding: 12, borderRadius: 8, backgroundColor: "#111318" },
-  fieldLabel: { fontSize: 8, color: "#a1a1aa", textTransform: "uppercase", letterSpacing: 1 },
-  fieldValue: { marginTop: 5, fontSize: 12, fontWeight: 700 },
-  skillsTitle: { marginTop: 24, fontSize: 9, color: "#a1a1aa", textTransform: "uppercase", letterSpacing: 1.2 },
-  skills: { marginTop: 8, fontSize: 10, color: "#d4d4d8", lineHeight: 1.5 },
-  footer: { marginTop: 34, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", gap: 16 },
-  issuer: { width: 230, border: "1px solid #27272a", borderRadius: 8, backgroundColor: "#111318", padding: 12 },
-  issuedBy: { fontSize: 8, color: "#a1a1aa", textTransform: "uppercase", letterSpacing: 1 },
-  issuerName: { marginTop: 10, fontSize: 11, color: "#f5f5f7", fontWeight: 700 },
-  issuerText: { marginTop: 3, fontSize: 9, color: "#a1a1aa" },
-  issuerRule: { height: 1, backgroundColor: "#3f3f46", marginTop: 10, marginBottom: 8 },
-  digitalOnly: { fontSize: 7, color: "#71717a", textTransform: "uppercase", letterSpacing: 0.8 },
-  seal: { width: 112, height: 112, borderWidth: 2, borderRadius: 56, alignItems: "center", justifyContent: "center", paddingHorizontal: 12 },
-  sealMain: { fontSize: 10, fontWeight: 700, textAlign: "center", textTransform: "uppercase", lineHeight: 1.25 },
-  sealText: { marginTop: 4, fontSize: 7, color: "#d4d4d8", textAlign: "center", textTransform: "uppercase", letterSpacing: 0.8 },
+  recipientPhoto: { width: 42, height: 42, borderRadius: 8, objectFit: "cover" },
+  name: { fontSize: 25, fontWeight: 700 },
+  wording: { marginTop: 18, fontSize: 10.5, color: "#3f3f46", lineHeight: 1.45 },
+  grid: { marginTop: 18, flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  field: { width: "48.5%", border: "1px solid #d4d4d8", padding: 9, borderRadius: 7, backgroundColor: "#fafafa" },
+  fieldLabel: { fontSize: 7, color: "#52525b", textTransform: "uppercase", letterSpacing: 0.8 },
+  fieldValue: { marginTop: 4, fontSize: 10.5, fontWeight: 700 },
+  skillsTitle: { marginTop: 16, fontSize: 8, color: "#52525b", textTransform: "uppercase", letterSpacing: 1 },
+  skills: { marginTop: 6, fontSize: 8.5, color: "#3f3f46", lineHeight: 1.35 },
+  footer: { marginTop: 20, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", gap: 12 },
+  issuer: { width: 226, border: "1px solid #d4d4d8", borderRadius: 8, backgroundColor: "#fafafa", padding: 10 },
+  issuedBy: { fontSize: 7, color: "#52525b", textTransform: "uppercase", letterSpacing: 0.9 },
+  signature: { marginTop: 4, width: 118, height: 36, objectFit: "contain" },
+  issuerName: { marginTop: 2, fontSize: 10, color: "#18181b", fontWeight: 700 },
+  issuerText: { marginTop: 2, fontSize: 8, color: "#52525b" },
+  issuerRule: { height: 1, backgroundColor: "#d4d4d8", marginTop: 7, marginBottom: 6 },
+  digitalOnly: { fontSize: 6, color: "#71717a", textTransform: "uppercase", letterSpacing: 0.7 },
+  seal: { width: 92, height: 92, borderWidth: 2, borderRadius: 46, alignItems: "center", justifyContent: "center", paddingHorizontal: 10 },
+  sealMain: { fontSize: 8.5, fontWeight: 700, textAlign: "center", textTransform: "uppercase", lineHeight: 1.2 },
+  sealText: { marginTop: 3, fontSize: 6, color: "#3f3f46", textAlign: "center", textTransform: "uppercase", letterSpacing: 0.7 },
   qrWrap: { alignItems: "center" },
-  qr: { width: 84, height: 84 },
-  verify: { marginTop: 6, maxWidth: 160, fontSize: 7, color: "#a1a1aa", textAlign: "center" },
-  disclaimer: { position: "absolute", left: 46, right: 46, bottom: 24, fontSize: 7, color: "#71717a", lineHeight: 1.4 },
+  qr: { width: 78, height: 78 },
+  verify: { marginTop: 5, maxWidth: 148, fontSize: 6.5, color: "#52525b", textAlign: "center" },
+  disclaimer: { position: "absolute", left: 34, right: 34, bottom: 18, fontSize: 6.5, color: "#71717a", lineHeight: 1.3 },
 });

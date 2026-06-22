@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from "react";
 import { environments } from "@/lib/curriculum";
 import type { TranslationKey } from "@/lib/i18n";
 import { getCertificateById, getCertificateByVerificationSlug, getProgress } from "@/lib/progressStore";
@@ -6,6 +6,22 @@ import type { CertificateRecord, EnvironmentId, UserProgress } from "@/lib/types
 import { useI18n } from "@/lib/useI18n";
 
 const CertificateDownload = lazy(() => import("./CertificateDownload"));
+
+class CertificateDownloadBoundary extends Component<{ children: ReactNode; fallback: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error(error);
+  }
+
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
 
 export default function CertificateView({ certificateId, verificationSlug, environmentId }: { certificateId?: string; verificationSlug?: string; environmentId?: EnvironmentId }) {
   const [progress, setProgress] = useState<UserProgress | null>(null);
@@ -70,11 +86,24 @@ export default function CertificateView({ certificateId, verificationSlug, envir
           <div className="text-xs uppercase tracking-[0.08em] text-zinc-500">{t("certificate.skills")}</div>
           <p className="mt-2 text-sm leading-6 text-white">{viewRecord.skillsCovered.join(" • ")}</p>
         </div>
-        <Suspense fallback={<div className="mt-8 text-sm text-zinc-400">{t("common.loadingDeck")}</div>}>
-          <CertificateDownload certificate={viewRecord} accent={environment.accent} />
-        </Suspense>
+        <CertificateDownloadBoundary fallback={<DownloadFallback t={t} verificationSlug={viewRecord.verificationSlug} />}>
+          <Suspense fallback={<div className="mt-8 text-sm text-zinc-400">{t("common.loadingDeck")}</div>}>
+            <CertificateDownload certificate={viewRecord} accent={environment.accent} />
+          </Suspense>
+        </CertificateDownloadBoundary>
       </section>
     </main>
+  );
+}
+
+function DownloadFallback({ t, verificationSlug }: { t: (key: TranslationKey, params?: Record<string, string | number>) => string; verificationSlug: string }) {
+  return (
+    <div className="mt-8 flex flex-wrap items-center gap-4">
+      <p className="basis-full text-sm text-red-300">No se pudo cargar el generador de PDF. Recarga la pagina e intenta otra vez.</p>
+      <a className="secondary-action inline-flex rounded-md px-5 py-3 text-sm font-semibold" href={`/verify/${verificationSlug}`}>
+        {t("certificate.publicVerification")}
+      </a>
+    </div>
   );
 }
 
